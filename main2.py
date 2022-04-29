@@ -110,3 +110,14 @@ while fl:
     image.save("1.jpg", "JPEG")
 
     del filelist[rnd_index]
+
+lst_pict = random.randint(0, len(filelist))
+image0 = Image.open(filelist[rnd_index])
+pix = image0.load()
+for ii in range(width0):
+    for jj in range(height0):
+        a = pix[ii, jj][0]
+        b = pix[ii, jj][1]
+        c = pix[ii, jj][2]
+        draw.point((ii, jj), (a, b, c))
+image.save("1.jpg", "JPEG")
