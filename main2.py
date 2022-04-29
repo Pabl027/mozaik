@@ -79,7 +79,7 @@ while fl:
         while j <= height - height0:
             if protect[int(i/size0)][int(j/size1)] != 1:
                 if first_comp:
-                    max_comp = comparison1(image, image0, i, j)
+                    max_comp = comparison1(image, image0, i, j, size0, size1)
                     now_comp = max_comp + 1
                     first_comp = False
                 else:
