@@ -64,8 +64,8 @@ while fl:
                 lst_pict += 1
                 if lst_pict > 1:
                     break
-        if lst_pict == 1:
-            fl = False
+    if lst_pict == 1:
+        fl = False
     rnd_index = random.randint(0, len(filelist)-1)
     first_comp = True
     mirror_comp = []
