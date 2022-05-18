@@ -1,0 +1,113 @@
+# В этом коде другой алгоритм расстановки.
+# Сначала выьирается случайное место на картинке, а потом для нее подбирается картинка.
+from comparison import comparison1, comparison11
+from PIL import Image, ImageDraw
+import random
+import os
+
+fl = True
+protect = []
+
+save_i = 0
+save_j = 0
+
+
+image = Image.open("1.jpg")
+width = image.size[0]  # Определяем ширину.
+height = image.size[1]  # Определяем высоту.
+
+first_size = True
+path = "image"
+filelist = []
+
+for root, dirs, files in os.walk(path):
+    for file in files:
+        name = os.path.splitext(file)[1]
+        if name == ".jpg":
+            test = Image.open(os.path.join(root, file))
+            if first_size:
+                size0 = test.size[0]
+                size1 = test.size[1]
+                first_size = False
+            if test.size[0] != size0 or test.size[1] != size1:
+                print(os.path.join(root, file))
+            else:
+                filelist.append(os.path.join(root, file))
+width0 = size0  # Определяем ширину.
+height0 = size1
+
+for uu in range(round(width/size0)):
+    protect.append([])
+
+for uu2 in range(round(width/size0)):
+    for uu1 in range(round(height/size1)):
+        protect[uu2].append(0)
+
+while fl:
+    if len(filelist) < 2:
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                name = os.path.splitext(file)[1]
+                if name == ".jpg":
+                    test = Image.open(os.path.join(root, file))
+                    if first_size:
+                        size0 = test.size[0]
+                        size1 = test.size[1]
+                        first_size = False
+                    if test.size[0] != size0 or test.size[1] != size1:
+                        print(os.path.join(root, file))
+                    else:
+                        filelist.append(os.path.join(root, file))
+    lst_pict = 0
+    for lst11 in protect:
+        for lst110 in lst11:
+            if lst110 == 0:
+                lst_pict += 1
+                if lst_pict > 1:
+                    break
+    if lst_pict == 1:
+        fl = False
+    x_select = random.randint(0, round(width/size0) - 1)
+    y_select = random.randint(0, round(height/size1) - 1)
+    while protect[x_select][y_select] == 1:
+        x_select += 1
+        if x_select == round(width/size0):
+            x_select = 0
+            y_select += 1
+        if y_select == round(height/size1):
+            y_select = 0
+    first_comp = True
+    mirror_comp = []
+    image = Image.open("1.jpg")
+    draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования.
+    for elem in filelist:
+        image0 = Image.open(elem)
+        pix = image0.load()
+        if first_comp:
+            max_comp = comparison1(image, image0, x_select * size0, y_select * size1, size0, size1)
+            now_comp = max_comp + 1
+            first_comp = False
+            save_elem = elem
+        else:
+            now_comp = comparison11(image, image0, x_select * size0, y_select * size1, max_comp, size0, size1)
+        if now_comp < max_comp:
+            save_elem = elem
+            max_comp = now_comp
+            mirror_comp = []
+        elif now_comp == max_comp:
+            if len(mirror_comp) == 0:
+                mirror_comp.append(save_elem)
+            mirror_comp.append(elem)
+    if len(mirror_comp) != 0:
+        save_elem = random.choice(mirror_comp)
+    protect[x_select][y_select] = 1
+    image0 = Image.open(save_elem)
+    pix = image0.load()
+    for ii in range(width0):
+        for jj in range(height0):
+            a = pix[ii, jj][0]
+            b = pix[ii, jj][1]
+            c = pix[ii, jj][2]
+            draw.point((ii + x_select * size0, jj + y_select * size1), (a, b, c))
+    image.save("1.jpg", "JPEG")
+    filelist.remove(save_elem)
